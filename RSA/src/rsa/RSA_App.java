@@ -75,6 +75,11 @@ public class RSA_App extends javax.swing.JFrame {
     //Hàm ước chung lớn nhất:
     private long GCD(long a, long b)
     {
+        if(a > b){
+            long tg = a;
+            a = b;
+            b = tg;
+        }
         if(a==0) return b;
         if(b%a==0) return a;
         else return GCD(b%a,a);
@@ -114,15 +119,15 @@ public class RSA_App extends javax.swing.JFrame {
     //Hàm tạo khóa:
     private void CreateKey(){
         Random rd = new Random();
-        //Set số P random từ 80 - 150
+        //Set số P random từ 80 - 150 + 80
         soP = rd.nextLong(150) + 80;
-        
+
         //Kiểm tra xem số P có phải số nguyên tố không! nếu không phải thì set lại
         while(!KtraSoNguyenTo(soP)){
             soP = rd.nextLong(150) + 80;
         }
         
-        //Set số Q random từ 80 - 150
+        //Set số Q random từ 80 - 150 + 80
         soQ = rd.nextLong(150) + 80;
         //Kiểm tra xem số Q có phải số nguyên tố không! nếu không phải thì set lại
         while(!KtraSoNguyenTo(soQ) || soQ == soP){
@@ -139,6 +144,7 @@ public class RSA_App extends javax.swing.JFrame {
         while(GCD(soD, phiN) != 1){
             soD = rd.nextLong(150) + 80;
         }
+        
         soE = NghichDao(soD,phiN);
     }
     
@@ -154,22 +160,19 @@ public class RSA_App extends javax.swing.JFrame {
     
     //Kiểm tra khóa và show dialog
     private void checkKey(){
+        //Ktra xem các ô còn trống không
+        if( Edt_q.getText().trim().equals("") ||
+            Edt_p.getText().trim().equals("") ||
+            Edt_d.getText().trim().equals(""))
+            JOptionPane.showMessageDialog(rootPane, "Nhập đủ các ô!", "ERROR", HEIGHT);
+        
         //Gắn giá trị cho các số:
         soQ = Long.parseLong(Edt_q.getText());        
         soP = Long.parseLong(Edt_p.getText());
         soD = Long.parseLong(Edt_d.getText());
-        phiN = (soP-1)*(soQ-1);
-        soN = soP * soQ;
-        soE = NghichDao(soD,phiN);
-        
-        //Ktra xem các ô còn trống không
-        if( Edt_q.getText().equals("") ||
-            Edt_p.getText().equals("") ||
-            Edt_d.getText().equals(""))
-            JOptionPane.showMessageDialog(rootPane, "Nhập đủ các ô!", "ERROR", HEIGHT);
         
         //Kiểm tra xem p có phải số nguyên tố không
-        else if(!KtraSoNguyenTo(soP)) 
+        if(!KtraSoNguyenTo(soP)) 
             JOptionPane.showMessageDialog(rootPane, "Số p không phải là số nguyên tố!", "ERROR", HEIGHT);
         
         //Kiểm tra xem q có phải số nguyên tố không
@@ -186,6 +189,10 @@ public class RSA_App extends javax.swing.JFrame {
             isConfirm = true;
 
         }
+        
+        phiN = (soP-1)*(soQ-1);
+        soN = soP * soQ;
+        soE = NghichDao(soD,phiN);
         
     }
     
@@ -823,9 +830,9 @@ public class RSA_App extends javax.swing.JFrame {
     }//GEN-LAST:event_Btn_ResetActionPerformed
     //Set sự kiện cho nút lưu bên gửi
     private void Btn_LuuGuiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Btn_LuuGuiActionPerformed
-        if(BM_Gui.getText().equals(""))
+        if(BM_Gui.getText().trim().equals(""))
         {
-            JOptionPane.showMessageDialog(rootPane, "Bản rõ trống!");
+            JOptionPane.showMessageDialog(rootPane, "Bản mã trống!");
         }
         else {
             chooseFile(BM_Gui);
@@ -833,7 +840,7 @@ public class RSA_App extends javax.swing.JFrame {
     }//GEN-LAST:event_Btn_LuuGuiActionPerformed
     //Set sự kiện cho nút lưu bên nhận
     private void Btn_LuuNhanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Btn_LuuNhanActionPerformed
-        if(BR_Nhan.getText().equals(""))
+         if(BR_Nhan.getText().trim().equals(""))
         {
             JOptionPane.showMessageDialog(rootPane, "Bản rõ trống!");
         }
@@ -851,10 +858,10 @@ public class RSA_App extends javax.swing.JFrame {
     }//GEN-LAST:event_Btn_FileNhanActionPerformed
     //Set sự kiện cho nút mã hóa bên nhận
     private void Btn_MaHoaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Btn_MaHoaActionPerformed
-        if(!isConfirm){
+         if(!isConfirm){
             JOptionPane.showMessageDialog(rootPane, "Chưa tạo khóa!", "ERROR", HEIGHT);
         }
-        else if(BR_Gui.getText().equals(""))
+        else if(BR_Gui.getText().trim().equals(""))
         {
             JOptionPane.showMessageDialog(rootPane, "Bản rõ chưa được nhập!", "ERROR", HEIGHT);
             
